@@ -40,11 +40,19 @@ class ContaBancaria {
 
     // Métodos para operações bancárias
     public void depositar(double valor) {
-        saldo += valor;
-        System.out.println("Deposito de R$" + valor + " realizado com sucesso.");
+        if (valor > 0) {
+            saldo += valor;
+            System.out.println("Deposito de R$" + valor + " realizado com sucesso.");
+        } else {
+            System.out.println("Valor de depósito inválido.");
+        }
     }
 
     public void sacar(double valor) {
+        if (valor <= 0) {
+            System.out.println("Valor de saque inválido.");
+            return;
+        }
         if (valor <= saldo) {
             saldo -= valor;
             System.out.println("Saque de R$" + valor + " realizado com sucesso.");
@@ -74,6 +82,7 @@ class ContaBancaria {
                 break;
             default:
                 System.out.println("Opcao de investimento invalida.");
+                return;
         }
 
         saldo -= valorInvestimento;
@@ -139,7 +148,8 @@ public class Main {
 
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
-
+        
+        // Menu inicial
         int opcao;
         do {
             System.out.println("\n--- Menu Inicial ---");
@@ -168,15 +178,24 @@ public class Main {
         scanner.close();
     }
 
+    //Menu de criação de conta
     private static void criarConta(Scanner scanner) {
         System.out.println("\n--- Criar Conta ---");
         System.out.print("Nome: ");
         String nome = scanner.nextLine();
         System.out.print("Idade: ");
         int idade = scanner.nextInt();
-        System.out.print("Numero da Conta: ");
-        int numeroConta = scanner.nextInt();
         scanner.nextLine();
+        System.out.print("Numero da Conta: ");
+        int numeroConta;
+        while (true) {
+            try {
+                numeroConta = Integer.parseInt(scanner.nextLine());
+                break;
+            } catch (NumberFormatException e) {
+                System.out.println("Por favor, insira um número válido para o número da conta.");
+            }
+        }
         System.out.print("Senha: ");
         String senha = scanner.nextLine();
 
@@ -196,8 +215,15 @@ public class Main {
     private static void acessarConta(Scanner scanner) {
         System.out.println("\n--- Acessar Conta ---");
         System.out.print("Numero da Conta: ");
-        int numeroConta = scanner.nextInt();
-        scanner.nextLine();
+        int numeroConta;
+        while (true) {
+            try {
+                numeroConta = Integer.parseInt(scanner.nextLine());
+                break;
+            } catch (NumberFormatException e) {
+                System.out.println("Por favor, insira um número válido para o número da conta.");
+            }
+        }
         System.out.print("Senha: ");
         String senha = scanner.nextLine();
 
@@ -212,6 +238,7 @@ public class Main {
         System.out.println("Conta nao encontrada ou senha incorreta.");
     }
 
+    // Menu de operações da conta
     private static void menuOperacoes(Scanner scanner, ContaBancaria conta) {
         int opcao;
         do {
@@ -224,30 +251,60 @@ public class Main {
             System.out.println("6. Voltar");
             System.out.print("Escolha uma opcao: ");
             opcao = scanner.nextInt();
-    
+            scanner.nextLine();
+
             switch (opcao) {
+                // Depositar
                 case 1:
                     System.out.print("Digite o valor a depositar: ");
-                    double valorDeposito = scanner.nextDouble();
+                    double valorDeposito;
+                    while (true) {
+                        try {
+                            valorDeposito = Double.parseDouble(scanner.nextLine());
+                            break;
+                        } catch (NumberFormatException e) {
+                            System.out.println("Por favor, insira um valor válido para o depósito.");
+                        }
+                    }
                     conta.depositar(valorDeposito);
                     break;
                 case 2:
+                    // Sacar
                     System.out.print("Digite o valor a sacar: ");
-                    double valorSaque = scanner.nextDouble();
+                    double valorSaque;
+                    while (true) {
+                        try {
+                            valorSaque = Double.parseDouble(scanner.nextLine());
+                            break;
+                        } catch (NumberFormatException e) {
+                            System.out.println("Por favor, insira um valor válido para o saque.");
+                        }
+                    }
                     conta.sacar(valorSaque);
                     break;
                 case 3:
+                    // Consultar saldo
                     conta.consultarSaldo();
                     break;
                 case 4:
+                    // Consultar investimentos
                     conta.consultarInvestimentos(scanner);
                     break;
                 case 5:
+                    // Investir
                     if (conta.getSaldo() <= 0) {
                         System.out.println("Saldo insuficiente para investir.");
                     } else {
                         System.out.print("Digite o valor que deseja investir: ");
-                        double valorInvestimento = scanner.nextDouble();
+                        double valorInvestimento;
+                        while (true) {
+                            try {
+                                valorInvestimento = Double.parseDouble(scanner.nextLine());
+                                break;
+                            } catch (NumberFormatException e) {
+                                System.out.println("Por favor, insira um valor válido para o investimento.");
+                            }
+                        }
                         if (valorInvestimento > 0 && valorInvestimento <= conta.getSaldo()) {
                             System.out.println("Escolha o tipo de investimento:");
                             System.out.println("1. Poupanca");
